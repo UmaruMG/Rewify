@@ -15,7 +15,7 @@ This extension adds **Rewinside** to every thumbnail.
 <br>
 
 [![Button Download Firefox]][Download Firefox]  
-[![Button Download Chrome]][Download Chrome]
+[![Button Download Chrome]][Download Chrome]  
 [![Button Download Edge]][Download Edge]
 
 </div>
@@ -41,7 +41,7 @@ This extension adds **Rewinside** to every thumbnail.
 
 [Button Download Edge]: https://img.shields.io/badge/Edge-0078D7?style=for-the-badge&logoColor=white&logo=MicrosoftEdge
 
-[Download Firefox]: http://addons.mozilla.org/en-GB/firefox/addon/youtube-rewify/
+[Download Firefox]: http://addons.mozilla.org/de/firefox/addon/youtube-rewify/
 [Download Chrome]: http://chrome.google.com/webstore/detail/youtube-rewify/
 [Download Edge]: http://microsoftedge.microsoft.com/addons/detail/youtube-rewify/
 
