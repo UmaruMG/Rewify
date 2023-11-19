@@ -1,7 +1,7 @@
 
 <div align = center >
 
-# MrBeastify
+# Rewify
 
 <br>
 
@@ -10,13 +10,12 @@ trouble finding engaging click-baity videos?
 
 **Fear no more.**
 
-This extension adds the famous  
-youtuber **MrBeast** to every thumbnail.
+This extension adds **Rewinside** to every thumbnail.
 
 <br>
 
 [![Button Download Firefox]][Download Firefox]  
-[![Button Download Chrome]][Download Chrome]  
+[![Button Download Chrome]][Download Chrome]
 [![Button Download Edge]][Download Edge]
 
 </div>
@@ -25,11 +24,13 @@ youtuber **MrBeast** to every thumbnail.
 
 ## Notes
 
+-   This extension is a fork of [MrBeastify-Youtube][Fork].
+
 -   This extension should be compatible with any Firefox / Chromium based browser.
 
 -   This extension was inspired by **[Unnecessary Inventions][UI YouTube]** and his **[Website][UI Website]**.
 
--   This extension is unofficial and not affiliated with MrBeast or YouTube.
+-   This extension is unofficial and not affiliated with Rewinside or YouTube.
 
 
 <!----------------------------------------------------------------------------->
@@ -40,14 +41,11 @@ youtuber **MrBeast** to every thumbnail.
 
 [Button Download Edge]: https://img.shields.io/badge/Edge-0078D7?style=for-the-badge&logoColor=white&logo=MicrosoftEdge
 
-
-[Download Firefox]: http://addons.mozilla.org/en-GB/firefox/addon/youtube-mrbeastify/
-[Download Chrome]: http://chrome.google.com/webstore/detail/youtube-mrbeastify/dbmaeobgdodeimjdjnkipbfhgeldnmeb
-[Download Edge]: http://microsoftedge.microsoft.com/addons/detail/youtube-mrbeastify/jabaaojkmmljhmnheeihppepcmiadhll
-
+[Download Firefox]: http://addons.mozilla.org/en-GB/firefox/addon/youtube-rewify/
+[Download Chrome]: http://chrome.google.com/webstore/detail/youtube-rewify/
+[Download Edge]: http://microsoftedge.microsoft.com/addons/detail/youtube-rewify/
 
 [UI YouTube]: http://www.youtube.com/@UnnecessaryInventions
 [UI Website]: http://www.mrbeastify.com/
 
-
-[Development]: https://github.com/MagicJinn/MrBeastify-Youtube/issues/16
+[Fork]: https://github.com/MagicJinn/MrBeastify-Youtube
