@@ -42,8 +42,8 @@ This extension adds **Rewinside** to every thumbnail.
 [Button Download Edge]: https://img.shields.io/badge/Edge-0078D7?style=for-the-badge&logoColor=white&logo=MicrosoftEdge
 
 [Download Firefox]: http://addons.mozilla.org/de/firefox/addon/youtube-rewify/
-[Download Chrome]: http://chrome.google.com/webstore/detail/youtube-rewify/
-[Download Edge]: http://microsoftedge.microsoft.com/addons/detail/youtube-rewify/
+[Download Chrome]: http://chrome.google.com/webstore/detail/youtube-rewify/fhgaogkcoebgjbbbickfmmgbofeedoio
+[Download Edge]: http://microsoftedge.microsoft.com/addons/detail/youtube-rewify/lgnebmnmdghcdnhpldpfecbffiojhpca
 
 [UI YouTube]: http://www.youtube.com/@UnnecessaryInventions
 [UI Website]: http://www.mrbeastify.com/
