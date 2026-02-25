@@ -1,19 +1,19 @@
-const imagesPath = "images/";
-var useAlternativeImages
-var flipBlacklist // Stores flipBlackList.js
-var blacklistStatus
-var extensionName = chrome.runtime.getManifest().name;
+const IMAGES_PATH = "images/";
+let useAlternativeImages;
+let flipBlacklist;
+let blacklistStatus;
+const EXTENSION_NAME = chrome.runtime.getManifest().name;
 
 // Config
-var extensionIsDisabled = false
-var appearChance = 1.00//%
-var flipChance = 0.25//%
+let extensionIsDisabled = false;
+let appearChance = 1.00; //%
+let flipChance = 0.25; //%
 
 // Apply the overlay
 function applyOverlay(thumbnailElement, overlayImageURL, flip = false) {
     // Create a new img element for the overlay
     const overlayImage = document.createElement("img");
-    overlayImage.id = extensionName;
+    overlayImage.id = EXTENSION_NAME;
     overlayImage.src = overlayImageURL;
     overlayImage.style.position = "absolute";
     overlayImage.style.top = overlayImage.style.left = "50%";
@@ -24,13 +24,17 @@ function applyOverlay(thumbnailElement, overlayImageURL, flip = false) {
 };
 
 function FindThumbnails() {
-    var thumbnailImages = document.querySelectorAll("ytd-thumbnail a > yt-image > img.yt-core-image");
-    var notificationImages = document.querySelectorAll('img.style-scope.yt-img-shadow[width="86"]');
-
-    const allImages = [ // Put all the selected images into an array
-        ...Array.from(thumbnailImages),
-        ...Array.from(notificationImages),
+    const imageSelectors = [
+        "ytd-thumbnail a > yt-image > img.yt-core-image", // old thumbnail images
+        'img.style-scope.yt-img-shadow[width="86"]', // notification images
+        '.yt-thumbnail-view-model__image img', // new main thumbnail images
+        'img.ytCoreImageHost' // another day, another queryselector
     ];
+
+    const allImages = [];
+    for (const selector of imageSelectors) {
+        allImages.push(...Array.from(document.querySelectorAll(selector)));
+    }
 
     // Check whether the aspect ratio matches that of a thumbnail
     const targetAspectRatio = [16 / 9, 4 / 3];
@@ -48,15 +52,15 @@ function FindThumbnails() {
     });
 
     // Select all images from the recommended video screen
-    var videowallImages = document.querySelectorAll(".ytp-videowall-still-image"); // Because youtube video wall images are not properly classified as images
-
-    listAllThumbnails = listAllThumbnails.concat(Array.from(videowallImages));
-
+    const videoWallImages = document.querySelectorAll(".ytp-videowall-still-image"); // Because youtube video wall images are not properly classified as images
+    const cuedThumbnailOverlays = document.querySelectorAll('div.ytp-cued-thumbnail-overlay-image');
+    listAllThumbnails.push(...videoWallImages, ...cuedThumbnailOverlays);
+        
     return listAllThumbnails.filter(image => {
         const parent = image.parentElement;
 
         // Checks whether it's a video preview
-        const isVideoPreview = parent.closest("#video-preview") !== null || parent.tagName == "YTD-MOVING-THUMBNAIL-RENDERER"
+        const isVideoPreview = parent.closest("#video-preview") !== null || Array.from(parent.classList).some(cls => cls.includes("ytAnimated"))
 
         // Checks whether it's a chapter thumbnail
         const isChapter = parent.closest("#endpoint") !== null
@@ -65,12 +69,12 @@ function FindThumbnails() {
         const processed = Array.from(parent.children).filter(child => {
             const alreadyHasAThumbnail =
                 child.id && // Child has ID
-                child.id.includes(extensionName);
+                child.id.includes(EXTENSION_NAME);
 
             return (
-                alreadyHasAThumbnail
-                || isVideoPreview
-                || isChapter
+                alreadyHasAThumbnail ||
+                isVideoPreview ||
+                isChapter
             )
         });
 
@@ -93,9 +97,14 @@ function applyOverlayToThumbnails() {
             let baseImagePath = getRandomImageFromDirectory();
             if (flip && flipBlacklist && flipBlacklist.includes(baseImagePath)) {
                 if (useAlternativeImages) {
-                    baseImagePath = `textFlipped/${baseImagePath}`;
+                    let newImagePath = `textFlipped/${baseImagePath}`;
+                    if (checkImageExistence(newImagePath)) {
+                        baseImagePath = newImagePath;
+                        flip = false
+                    }
+                } else {
+                    flip = false;
                 }
-                flip = false;
             }
 
             const overlayImageURL = Math.random() < appearChance ?
@@ -110,7 +119,7 @@ function applyOverlayToThumbnails() {
 
 // Get the URL of an image
 function getImageURL(index) {
-    return chrome.runtime.getURL(`${imagesPath}${index}.png`);
+    return chrome.runtime.getURL(`${IMAGES_PATH}${index}.png`);
 }
 
 // Checks if an image exists in the image folder
@@ -138,6 +147,11 @@ const last_indexes = Array(size_of_non_repeat)
 function getRandomImageFromDirectory() {
     let randomIndex = -1
 
+    // If the number of images is less than the size of the non-repeat array, reset the array
+    if (highestImageIndex <= size_of_non_repeat) {
+        last_indexes.fill(-1); // Reset the array
+    }
+
     // It selects a random index until it finds one that is not repeated
     while (last_indexes.includes(randomIndex) || randomIndex < 0) {
         randomIndex = Math.floor(Math.random() * highestImageIndex) + 1;
@@ -153,8 +167,8 @@ function getRandomImageFromDirectory() {
 var highestImageIndex;
 // Gets the highest index of an image in the image folder starting from 1
 async function getHighestImageIndex() {
-    // Avoid exponential search for smaller values
-    let i = 4;
+    const INITIAL_INDEX = 4;
+    let i = INITIAL_INDEX;
 
     // Increase i until i is greater than the number of images
     while (await checkImageExistence(i)) {
@@ -162,7 +176,7 @@ async function getHighestImageIndex() {
     }
 
     // Possible min and max values
-    let min = i <= 4 ? 1 : i / 2;
+    let min = i <= INITIAL_INDEX ? 1 : i / 2;
     let max = i;
 
     // Binary search
@@ -187,18 +201,16 @@ async function getHighestImageIndex() {
 //  BrandonXLF Magic  //
 ////////////////////////
 
-function GetFlipBlocklist() {
-    fetch(chrome.runtime.getURL(`${imagesPath}flip_blacklist.json`))
-        .then(response => response.json())
-        .then(data => {
-            useAlternativeImages = data.useAlternativeImages;
-            flipBlacklist = data.blacklistedImages;
-
-            blacklistStatus = "Flip blacklist found. " + (useAlternativeImages ? "Images will be substituted." : "Images won't be flipped.")
-        })
-        .catch((error) => {
-            blacklistStatus = "No flip blacklist found. Proceeding without it."
-        });
+async function GetFlipBlocklist() {
+    try {
+        const response = await fetch(chrome.runtime.getURL(`${IMAGES_PATH}flip_blacklist.json`));
+        const data = await response.json();
+        useAlternativeImages = data.useAlternativeImages;
+        flipBlacklist = data.blacklistedImages;
+        blacklistStatus = `Flip blacklist found. ${useAlternativeImages ? "Images will be substituted." : "Images won't be flipped."}`;
+    } catch (error) {
+        blacklistStatus = "No flip blacklist found. Proceeding without it";
+    }
 }
 
 async function LoadConfig() {
@@ -226,36 +238,36 @@ async function LoadConfig() {
         appearChance = config.appearChance || df.appearChance;
         flipChance = config.flipChance || df.flipChance;
 
-        if (Object.keys(config).length === 0 && config.constructor === Object /* config doesn't exist */) {
+        if (Object.keys(config).length === 0 && config.constructor === Object /* config doesn't exist */ ) {
             await new Promise((resolve, reject) => {
                 chrome.storage.local.set(df, () => {
                     chrome.runtime.lastError ? // Check for errors
                         reject(chrome.runtime.lastError) : // Reject if errors
                         resolve() // Resolve if no errors
                 })
-            }
-            )
+            })
         }
-    } catch (error) { console.error("Guhh?? Error loading configuration:", error); }
+    } catch (error) {
+        console.error("Guhh?? Error loading configuration:", error);
+    }
 }
 
 async function Main() {
     await LoadConfig()
 
     if (extensionIsDisabled) {
-        console.log(`${extensionName} is disabled.`)
+        console.info(`${EXTENSION_NAME} is disabled.`)
         return // Exit the function if MrBeastify is disabled
     }
 
-    GetFlipBlocklist()
-    console.log(`${extensionName} will now detect the amount of images. Ignore all the following errors.`)
-    getHighestImageIndex()
+    await GetFlipBlocklist()
+    console.info(`${EXTENSION_NAME} will now detect the amount of images. Ignore all the following errors.`)
+    await getHighestImageIndex()
         .then(() => {
             setInterval(applyOverlayToThumbnails, 100);
-            console.log(
-                `${extensionName} Loaded Successfully. ${highestImageIndex} images detected. ${blacklistStatus}.`
+            console.info(
+                `${EXTENSION_NAME} Loaded Successfully. ${highestImageIndex} images detected. ${blacklistStatus}.`
             );
-
         })
 }
 
